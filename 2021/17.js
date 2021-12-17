@@ -20,7 +20,7 @@ function simulate(vx, vy) {
     if (vx !== 0) {
       vx -= Math.sign(vx);
     }
-    vy --;
+    vy--;
 
     if (y > maxHeight) {
       maxHeight = y;
@@ -36,7 +36,7 @@ function simulate(vx, vy) {
 
 let maxMaxHeight = 0;
 let count = 0;
-for (let vx = 0; vx <=275; vx++) {
+for (let vx = 0; vx <= 275; vx++) {
   for (let vy = -75; vy <= 1000; vy++) {
     const result = simulate(vx, vy);
     if (result !== -Infinity) {
