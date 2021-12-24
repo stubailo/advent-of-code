@@ -9,88 +9,74 @@ console.time("logic");
 
 const parsed = rows.map(parse);
 
+console.log(parsed.map(toArr));
+
 function parse(str) {
-  let counter = 0;
+  let first = null;
 
-  return readValue();
+  let prev = null;
+  [...str].forEach((c, i) => {
+    const int = parseInt(c, 10);
+    const node = {};
 
-  function readValue() {
-    if (str[counter] === "[") {
-      readChar("[");
-      const l = readValue();
-      readChar(",");
-      const r = readValue();
-      readChar("]");
-      const node = {l, r};
-      l.parent = node;
-      r.parent = node;
-      return node;
+    if (isNumber(int)) {
+      node.val = int;
+    } else {
+      node.val = c;
     }
 
-    return readNum();
-  }
-
-  function readChar(c) {
-    if (str[counter] !== c) {
-      throw new Error("expected: " + c);
+    if (i === 0) {
+      first = node;
+    } else {
+      node.prev = prev;
+      prev.next = node;
     }
-    counter++;
-  }
 
-  function readNum() {
-    const val = parseInt(str[counter], 10);
-    if (isNaN(val)) {
-      throw new Error(
-        "expected number, got " + str[counter] + " at " + counter
-      );
-    }
-    counter++;
-    return val;
-  }
+    prev = node;
+  });
+
+  return first;
 }
 
-let sum = parsed[0];
-parsed.forEach((num, i) => {
-  if (i === 0) {
-    // beginning
-    return;
-  }
-
-  sum = {l: sum, r: num};
-  sum.l.parent = sum;
-  sum.r.parent = sum;
-  reduce(sum);
-
-  console.log(sum);
-});
-
-function reduce(num) {
-  while (explode(num, 0)) {}
+function isNumber(c) {
+  return !isNaN(c);
 }
 
-function explode(num, depth) {
-  if (depth >= 4 && typeof num.l === 'number' && typeof num.r === 'number') {
-    // ???
+function sum(l, r) {
+  const first = {
+    val: "[",
+    next: l,
+  };
 
-    return true;
+  const middle = {
+    val: ",",
+    prev: l,
+    next: r,
+  };
+
+  const last = {
+    val: "]",
+    prev: r,
+  };
+
+  l.prev = first;
+  l.next = middle;
+  r.prev = middle;
+  r.next = last;
+
+  return first;
+}
+
+function toArr(first) {
+  const arr = [];
+  let next = first;
+
+  while (next) {
+    arr.push(next.val);
+    next = next.next;
   }
 
-  let exploded = false;
-  if (Array.isArray(num.l)) {
-    exploded = explode(num.l, depth + 1);
-    if (exploded) {
-      return true;
-    }
-  }
-
-  if (Array.isArray(num.r)) {
-    exploded = explode(num.r, depth + 1);
-    if (exploded) {
-      return true;
-    }
-  }
-
-  return false;
+  return arr.join("");
 }
 
 console.timeEnd("logic");
