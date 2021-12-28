@@ -10,33 +10,40 @@ console.time("logic");
 
 const parsed = rows.map(parse);
 
-let first = null;
+let firstOuter = null;
 parsed.forEach((p, i) => {
   if (i === 0) {
-    first = p;
+    firstOuter = p;
   } else {
-    first = sum(first, p);
+    firstOuter = sum(firstOuter, p);
+    reduce(firstOuter);
+    console.log("reduced", toStr(firstOuter));
   }
 });
 
-let hasMore = true;
+function reduce(first) {
+  let hasMore = true;
+  while (hasMore) {
+    hasMore = explode(first);
 
-while (hasMore) {
-  hasMore = explode(first);
-
-  if (hasMore) {
-    console.log("exploded!");
-  } else {
-    hasMore = split(first);
     if (hasMore) {
-      console.log("split!");
+      console.log("exploded!");
+      console.log(toStr(first));
+    } else {
+      hasMore = split(first);
+      if (hasMore) {
+        console.log("split!");
+        console.log(toStr(first));
+      }
     }
+
+    validate(first);
   }
 
-  validate(first);
+  return first;
 }
 
-const tree = parseToTree(first);
+const tree = parseToTree(firstOuter);
 
 function magnitude(t) {
   if (isNumber(t)) {
@@ -54,27 +61,20 @@ function parse(str) {
   let prev = null;
   [...str].forEach((c, i) => {
     const int = parseInt(c, 10);
-    const node = {};
+    let val;
 
     if (isNumber(int)) {
-      if (isNumber(prev.val)) {
-        prev.val = prev.val * 10 + int;
-        return;
-      }
-
-      node.val = int;
+      val = int;
     } else {
-      node.val = c;
+      val = c;
     }
 
     if (i === 0) {
-      first = node;
+      prev = { val };
+      first = prev;
     } else {
-      node.prev = prev;
-      prev.next = node;
+      prev = insertAfter(prev, val);
     }
-
-    prev = node;
   });
 
   return first;
@@ -88,26 +88,10 @@ function sum(l, r) {
   const lastL = getLast(l);
   const lastR = getLast(r);
 
-  const first = {
-    val: "[",
-    next: l,
-  };
-
-  const middle = {
-    val: ",",
-    prev: lastL,
-    next: r,
-  };
-
-  const last = {
-    val: "]",
-    prev: lastR,
-  };
-
-  l.prev = first;
-  lastL.next = middle;
-  r.prev = middle;
-  lastR.next = last;
+  stitch(lastL, r);
+  const first = insertBefore(l, "[");
+  insertBefore(r, ",");
+  insertAfter(lastR, "]");
 
   return first;
 }
@@ -174,9 +158,9 @@ function explode(first) {
 
       const before = curr.prev.prev;
       const after = curr.next.next.next.next;
-      const zero = { val: 0, prev: before, next: after };
-      before.next = zero;
-      after.prev = zero;
+
+      stitch(before, after);
+      insertAfter(before, 0);
 
       return true;
     } else if (curr.val === "[") {
@@ -197,15 +181,14 @@ function split(first) {
     if (isNumber(curr.val) && curr.val >= 10) {
       const before = curr.prev;
       const after = curr.next;
-      const pair = parse(
-        `[${Math.floor(curr.val / 2)},${Math.ceil(curr.val / 2)}]`
-      );
 
-      before.next = pair;
-      pair.prev = before;
+      stitch(before, after);
 
-      after.prev = getLast(pair);
-      getLast(pair).next = after;
+      let next = insertAfter(before, "[");
+      next = insertAfter(next, Math.floor(curr.val / 2));
+      next = insertAfter(next, ",");
+      next = insertAfter(next, Math.ceil(curr.val / 2));
+      next = insertAfter(next, "]");
 
       return true;
     }
@@ -253,6 +236,43 @@ function validate(first) {
   if (/\[0\]/.test(toStr(first))) {
     throw new Error("oh no!!");
   }
+}
+
+function insertAfter(node, val) {
+  const newNode = {
+    val,
+    prev: node,
+    next: node.next,
+  };
+
+  if (node.next) {
+    node.next.prev = newNode;
+  }
+
+  node.next = newNode;
+
+  return newNode;
+}
+
+function insertBefore(node, val) {
+  const newNode = {
+    val,
+    next: node,
+    prev: node.prev,
+  };
+
+  if (node.prev) {
+    node.prev.next = newNode;
+  }
+
+  node.prev = newNode;
+
+  return newNode;
+}
+
+function stitch(l, r) {
+  l.next = r;
+  r.prev = l;
 }
 
 console.timeEnd("logic");
