@@ -3,6 +3,7 @@ const fs = require("fs");
 const { exit } = require("process");
 
 const inputFile = fs.readFileSync("./19.input.txt", { encoding: "utf-8" });
+
 const rows = inputFile.split(/\r?\n/);
 rows.pop();
 
@@ -24,68 +25,28 @@ rows.forEach((r) => {
 });
 
 // x, y, z
-const allRotations = [
-  [
-    [1, 0, 0],
-    [0, 1, 0],
-  ],
-  [
-    [1, 0, 0],
-    [0, -1, 0],
-  ],
-  [
-    [1, 0, 0],
-    [0, 0, 1],
-  ],
-  [
-    [1, 0, 0],
-    [0, 0, -1],
-  ],
-  [
-    [0, 1, 0],
-    [1, 0, 0],
-  ],
-  [
-    [0, 1, 0],
-    [-1, 0, 0],
-  ],
-  [
-    [0, 1, 0],
-    [0, 0, 1],
-  ],
-  [
-    [0, 1, 0],
-    [0, 0, -1],
-  ],
-  [
-    [0, 0, 1],
-    [1, 0, 0],
-  ],
-  [
-    [0, 0, 1],
-    [-1, 0, 0],
-  ],
-  [
-    [0, 0, 1],
-    [0, 1, 0],
-  ],
-  [
-    [0, 0, 1],
-    [0, -1, 0],
-  ],
-].map((m) => {
-  const a = m[0];
-  const b = m[1];
-  return [
-    a,
-    b,
-    [
-      a[1] * b[2] - a[2] * b[1],
-      a[2] * b[0] - a[0] * b[2],
-      a[0] * b[1] - a[1] * b[0],
-    ],
-  ];
-});
+const allRotations = [];
+
+for (let xIndex = 0; xIndex < 6; xIndex++) {
+  for (let yIndex = 0; yIndex < 4; yIndex++) {
+    const xRow = [0, 0, 0];
+    xRow[xIndex % 3] = Math.floor(xIndex / 3) === 1 ? -1 : 1;
+
+    const availableYPositions = [0, 1, 2].filter((p) => p !== xIndex % 3);
+
+    const yRow = [0, 0, 0];
+    yRow[availableYPositions[yIndex % 2]] =
+      Math.floor(yIndex / 2) === 1 ? -1 : 1;
+
+    const zRow = [
+      xRow[1] * yRow[2] - xRow[2] * yRow[1],
+      xRow[2] * yRow[0] - xRow[0] * yRow[2],
+      xRow[0] * yRow[1] - xRow[1] * yRow[0],
+    ];
+
+    allRotations.push([xRow, yRow, zRow]);
+  }
+}
 
 function detectOverlap(scanner1, scanner2) {
   let result = null;
@@ -146,64 +107,52 @@ function dot(l, r) {
   return l[0] * r[0] + l[1] * r[1] + l[2] * r[2];
 }
 
-// to detect overlap -- test 8 different rotations, one of each n as a starting point, each pair 25*25
-
-const groupMap = {};
-let groups = null;
-
-try {
-  groups = JSON.parse(
-    fs.readFileSync("19.intermediate.json", { encoding: "utf-8" })
-  );
-} catch (e) {
-  console.log("did not read file");
+function sub(l, r) {
+  return [l[0] - r[0], l[1] - r[1], l[2] - r[2]];
 }
 
-if (!groups) {
-  groups = [];
-  for (let i = scanners.length - 1; i > 0; i--) {
-    const s1 = scanners[i];
-    for (let j = i - 1; j >= 0; j--) {
-      const s2 = scanners[j];
+function add(l, r) {
+  return [l[0] + r[0], l[1] + r[1], l[2] + r[2]];
+}
 
-      if (i !== j) {
-        const result = detectOverlap(s1, s2);
-        if (result) {
-          if (groupMap[i]) {
-            groups[groupMap[i]].push({ ...result, scanners: [i, j] });
-          } else if (groupMap[j]) {
-            groups[groupMap[j]].push({ ...result, scanners: [i, j] });
-          } else {
-            groupMap[i] = groups.length;
-            groupMap[j] = groups.length;
+// to detect overlap -- test 8 different rotations, one of each n as a starting point, each pair 25*25
 
-            groups.push([{ ...result, scanners: [i, j] }]);
-          }
-        }
+const located = { 0: true };
+let next = [scanners[0]];
+
+const setOfPoints = {};
+
+scanners[0].forEach((p) => (setOfPoints[p.join(",")] = true));
+
+while (next.length) {
+  const originScanner = next.pop();
+  for (let i = 0; i < scanners.length; i++) {
+    if (!located[i]) {
+      const s2 = scanners[i];
+      const result = detectOverlap(originScanner, s2);
+
+      if (result) {
+        console.log("detected overlap!", i);
+
+        const relativeLocation = sub(
+          result.startingPoint1,
+          result.startingPoint2
+        );
+
+        // convert points
+        const remappedPoints = s2
+          .map((p) => mul(result.rotation, p))
+          .map((p) => add(p, relativeLocation));
+
+        remappedPoints.forEach((p) => (setOfPoints[p.join(",")] = true));
+
+        located[i] = true;
+        next.push(remappedPoints);
       }
     }
   }
-
-  fs.writeFileSync("19.intermediate.json", JSON.stringify(groups, null, 2), {
-    encoding: "utf-8",
-  });
 }
 
-let numBeacons = 0;
-groups.forEach((g) => {
-  if (g.length === 1) {
-    numBeacons +=
-      scanners[g[0].scanners[0]].length +
-      scanners[g[0].scanners[1]].length -
-      g[0].overlapCount;
-  } else {
-    console.log(g);
-    // ok, we need to transform all of the groups into a single coordinate system
-    // s1 + sp1 = s2 * rot + sp2
-    // s1 = s2 * rot + (sp2 - sp1)
-  }
-});
-
-console.log({ numBeacons });
+console.log(Object.keys(setOfPoints).length);
 
 console.timeEnd("logic");
