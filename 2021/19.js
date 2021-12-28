@@ -88,8 +88,9 @@ const allRotations = [
 });
 
 function detectOverlap(scanner1, scanner2) {
+  let result = null;
   // rotate scanner2
-  return allRotations.some((rotation) => {
+  const found = allRotations.some((rotation) => {
     const scanner2Rotation = scanner2.map((vec) => {
       return mul(rotation, vec);
     });
@@ -118,17 +119,23 @@ function detectOverlap(scanner1, scanner2) {
         });
 
         if (overlapCount >= 12) {
-          console.log({
+          result = {
             overlapCount,
             rotation,
             startingPoint1,
             startingPoint2,
-          });
+          };
           return true;
         }
       });
     });
   });
+
+  if (found) {
+    return result;
+  } else {
+    return null;
+  }
 }
 
 function mul(mat, vec) {
@@ -141,18 +148,35 @@ function dot(l, r) {
 
 // to detect overlap -- test 8 different rotations, one of each n as a starting point, each pair 25*25
 
+const groupMap = {};
+const groups = [];
+
 scanners.forEach((s1, i) => {
   if (i < scanners.length - 1) {
     for (let j = i + 1; j < scanners.length; j++) {
       const s2 = scanners[j];
 
       if (i !== j) {
-        if (detectOverlap(s1, s2)) {
-          console.log("overlap!!", i, j);
+        const result = detectOverlap(s1, s2);
+        if (result) {
+          if (groupMap[i]) {
+            groups[groupMap[i]].push(result);
+          } else if (groupMap[j]) {
+            groups[groupMap[j]].push(result);
+          } else {
+            groupMap[i] = groups.length;
+            groupMap[j] = groups.length;
+
+            groups.push([result]);
+          }
         }
       }
     }
   }
+});
+
+fs.writeFileSync("19.intermediate.json", JSON.stringify(groups), {
+  encoding: "utf-8",
 });
 
 console.timeEnd("logic");

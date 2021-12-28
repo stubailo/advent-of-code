@@ -1,0 +1,72 @@
+[
+  [
+    {
+      "overlapCount": 12,
+      "rotation": [
+        [1, 0, 0],
+        [0, 0, -1],
+        [0, 1, 0]
+      ],
+      "startingPoint1": [587, 471, -462],
+      "startingPoint2": [573, 480, 724]
+    }
+  ],
+  [
+    {
+      "overlapCount": 12,
+      "rotation": [
+        [0, 1, 0],
+        [0, 0, -1],
+        [-1, 0, 0]
+      ],
+      "startingPoint1": [882, 753, 478],
+      "startingPoint2": [-406, 714, 608]
+    }
+  ],
+  [
+    {
+      "overlapCount": 12,
+      "rotation": [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, -1]
+      ],
+      "startingPoint1": [-758, 376, -649],
+      "startingPoint2": [-743, -755, -651]
+    },
+    {
+      "overlapCount": 12,
+      "rotation": [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+      ],
+      "startingPoint1": [705, -863, -676],
+      "startingPoint2": [-539, -930, -576]
+    }
+  ],
+  [
+    {
+      "overlapCount": 12,
+      "rotation": [
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, -1]
+      ],
+      "startingPoint1": [-520, -520, 711],
+      "startingPoint2": [-498, 768, 595]
+    }
+  ],
+  [
+    {
+      "overlapCount": 12,
+      "rotation": [
+        [0, 0, 1],
+        [0, -1, 0],
+        [1, 0, 0]
+      ],
+      "startingPoint1": [-423, 223, 700],
+      "startingPoint2": [-455, -855, 836]
+    }
+  ]
+]
