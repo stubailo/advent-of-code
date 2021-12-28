@@ -149,34 +149,61 @@ function dot(l, r) {
 // to detect overlap -- test 8 different rotations, one of each n as a starting point, each pair 25*25
 
 const groupMap = {};
-const groups = [];
+let groups = null;
 
-scanners.forEach((s1, i) => {
-  if (i < scanners.length - 1) {
-    for (let j = i + 1; j < scanners.length; j++) {
+try {
+  groups = JSON.parse(
+    fs.readFileSync("19.intermediate.json", { encoding: "utf-8" })
+  );
+} catch (e) {
+  console.log("did not read file");
+}
+
+if (!groups) {
+  groups = [];
+  for (let i = scanners.length - 1; i > 0; i--) {
+    const s1 = scanners[i];
+    for (let j = i - 1; j >= 0; j--) {
       const s2 = scanners[j];
 
       if (i !== j) {
         const result = detectOverlap(s1, s2);
         if (result) {
           if (groupMap[i]) {
-            groups[groupMap[i]].push(result);
+            groups[groupMap[i]].push({ ...result, scanners: [i, j] });
           } else if (groupMap[j]) {
-            groups[groupMap[j]].push(result);
+            groups[groupMap[j]].push({ ...result, scanners: [i, j] });
           } else {
             groupMap[i] = groups.length;
             groupMap[j] = groups.length;
 
-            groups.push([result]);
+            groups.push([{ ...result, scanners: [i, j] }]);
           }
         }
       }
     }
   }
+
+  fs.writeFileSync("19.intermediate.json", JSON.stringify(groups, null, 2), {
+    encoding: "utf-8",
+  });
+}
+
+let numBeacons = 0;
+groups.forEach((g) => {
+  if (g.length === 1) {
+    numBeacons +=
+      scanners[g[0].scanners[0]].length +
+      scanners[g[0].scanners[1]].length -
+      g[0].overlapCount;
+  } else {
+    console.log(g);
+    // ok, we need to transform all of the groups into a single coordinate system
+    // s1 + sp1 = s2 * rot + sp2
+    // s1 = s2 * rot + (sp2 - sp1)
+  }
 });
 
-fs.writeFileSync("19.intermediate.json", JSON.stringify(groups), {
-  encoding: "utf-8",
-});
+console.log({ numBeacons });
 
 console.timeEnd("logic");
