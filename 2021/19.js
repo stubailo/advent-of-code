@@ -124,6 +124,8 @@ const setOfPoints = {};
 
 scanners[0].forEach((p) => (setOfPoints[p.join(",")] = true));
 
+const locations = [];
+
 while (next.length) {
   const originScanner = next.pop();
   for (let i = 0; i < scanners.length; i++) {
@@ -134,15 +136,17 @@ while (next.length) {
       if (result) {
         console.log("detected overlap!", i);
 
-        const relativeLocation = sub(
+        const absoluteLocation = sub(
           result.startingPoint1,
           result.startingPoint2
         );
 
+        locations.push(absoluteLocation);
+
         // convert points
         const remappedPoints = s2
           .map((p) => mul(result.rotation, p))
-          .map((p) => add(p, relativeLocation));
+          .map((p) => add(p, absoluteLocation));
 
         remappedPoints.forEach((p) => (setOfPoints[p.join(",")] = true));
 
@@ -154,5 +158,19 @@ while (next.length) {
 }
 
 console.log(Object.keys(setOfPoints).length);
+
+let maxManhat = 0;
+for (let i = 0; i < locations.length - 1; i++) {
+  for (let j = i + 1; j < locations.length; j++) {
+    const diff = sub(locations[i], locations[j]);
+    let manhat = 0;
+    diff.forEach((v) => {
+      manhat += Math.abs(v);
+    });
+    maxManhat = Math.max(manhat, maxManhat);
+  }
+}
+
+console.log("max distance", maxManhat);
 
 console.timeEnd("logic");
