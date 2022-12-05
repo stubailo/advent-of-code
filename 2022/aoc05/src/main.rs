@@ -84,11 +84,7 @@ fn main() {
 
     // print last item in each stack
     for stack in stacks.iter() {
-        if stack.is_empty() {
-            continue;
-        }
-
-        let last = stack.last().unwrap();
+        let last = stack.last().unwrap(); // we want to error if a stack is empty
         print!("{}", last);
     }
 
