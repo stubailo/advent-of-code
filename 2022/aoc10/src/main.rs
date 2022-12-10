@@ -10,7 +10,7 @@ fn main() {
 
     let mut value_of_x_at_cycle: Vec<i32> = Vec::new();
     let mut current_signal_strength: i32 = 1;
-    let mut current_cycle: i32 = 0;
+    let mut _current_cycle: i32 = 0;
 
     loop {
         let line = iter.next();
@@ -30,10 +30,10 @@ fn main() {
         match word {
             "addx" => {
                 value_of_x_at_cycle.push(current_signal_strength);
-                current_cycle += 1;
+                _current_cycle += 1;
 
                 value_of_x_at_cycle.push(current_signal_strength);
-                current_cycle += 1;
+                _current_cycle += 1;
 
                 let number = iter2.next().unwrap().parse::<i32>().unwrap();
 
@@ -41,7 +41,7 @@ fn main() {
             }
             "noop" => {
                 value_of_x_at_cycle.push(current_signal_strength);
-                current_cycle += 1;
+                _current_cycle += 1;
             }
             _ => {
                 panic!("Unknown instruction");
