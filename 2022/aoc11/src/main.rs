@@ -3,9 +3,9 @@ use std::fs;
 use std::time::Instant;
 
 struct Monkey {
-    items: Vec<u32>,
+    items: Vec<u64>,
     operation: String,
-    test_divisible_by: u32,
+    test_divisible_by: u64,
     next_monkey_if_true: usize,
     next_monkey_if_false: usize,
 }
@@ -26,7 +26,7 @@ fn main() {
     //     If false: throw to monkey 3
 
     let mut monkeys: Vec<Monkey> = Vec::new();
-    let mut monkey_index_to_num_inspected: HashMap<usize, u32> = HashMap::new();
+    let mut monkey_index_to_num_inspected: HashMap<usize, u64> = HashMap::new();
 
     'outer: loop {
         let mut current_monkey = Monkey {
@@ -47,9 +47,6 @@ fn main() {
 
             let line = line.unwrap();
 
-            // print line
-            println!("{}", line);
-
             if line.is_empty() {
                 monkeys.push(current_monkey);
                 continue 'outer;
@@ -57,15 +54,13 @@ fn main() {
                 // do nothing
             } else if line.trim().starts_with("Starting") {
                 line.split(": ").nth(1).unwrap().split(", ").for_each(|x| {
-                    current_monkey.items.push(x.parse::<u32>().unwrap());
+                    current_monkey.items.push(x.parse::<u64>().unwrap());
                 });
-                // print current_monkey.items
-                println!("Items: {:?}", current_monkey.items)
             } else if line.trim().starts_with("Operation") {
                 current_monkey.operation = line.split("= ").last().unwrap().to_string();
             } else if line.trim().starts_with("Test") {
                 current_monkey.test_divisible_by =
-                    line.split(" ").last().unwrap().parse::<u32>().unwrap();
+                    line.split(" ").last().unwrap().parse::<u64>().unwrap();
             } else if line.trim().starts_with("If true") {
                 current_monkey.next_monkey_if_true =
                     line.split(" ").last().unwrap().parse::<usize>().unwrap();
@@ -77,12 +72,12 @@ fn main() {
     }
 
     // do 20 rounds of simulation
-    for _ in 0..20 {
+    for _ in 0..10000 {
         for i in 0..monkeys.len() {
             let monkey = &mut monkeys[i];
 
             // First item in the tuple is the monkey to give to, second is the worry level to give
-            let mut to_throw: Vec<(usize, u32)> = Vec::new();
+            let mut to_throw: Vec<(usize, u64)> = Vec::new();
 
             for item in &monkey.items {
                 monkey_index_to_num_inspected
@@ -100,13 +95,13 @@ fn main() {
                 let operand_1_value = if operand_1 == "old" {
                     *item
                 } else {
-                    operand_1.parse::<u32>().unwrap()
+                    operand_1.parse::<u64>().unwrap()
                 };
 
                 let operand_2_value = if operand_2 == "old" {
                     *item
                 } else {
-                    operand_2.parse::<u32>().unwrap()
+                    operand_2.parse::<u64>().unwrap()
                 };
 
                 let new_item_intermediate = match operator {
@@ -117,7 +112,7 @@ fn main() {
                     _ => panic!("Unknown operator"),
                 };
 
-                let new_item = new_item_intermediate / 3;
+                let new_item = new_item_intermediate % 9699690;
 
                 // now we determine which monkey to give to
                 let next_monkey = if new_item % monkey.test_divisible_by == 0 {
@@ -138,7 +133,7 @@ fn main() {
     }
 
     // get values of monkey_index_to_num_inspected
-    let mut monkey_index_to_num_inspected_values: Vec<u32> = Vec::new();
+    let mut monkey_index_to_num_inspected_values: Vec<u64> = Vec::new();
     for (_, v) in monkey_index_to_num_inspected {
         monkey_index_to_num_inspected_values.push(v);
     }
