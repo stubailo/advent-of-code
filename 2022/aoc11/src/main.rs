@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::time::Instant;
 
@@ -5,8 +6,8 @@ struct Monkey {
     items: Vec<u32>,
     operation: String,
     test_divisible_by: u32,
-    next_monkey_if_true: u32,
-    next_monkey_if_false: u32,
+    next_monkey_if_true: usize,
+    next_monkey_if_false: usize,
 }
 
 fn main() {
@@ -25,6 +26,7 @@ fn main() {
     //     If false: throw to monkey 3
 
     let mut monkeys: Vec<Monkey> = Vec::new();
+    let mut monkey_index_to_num_inspected: HashMap<usize, u32> = HashMap::new();
 
     'outer: loop {
         let mut current_monkey = Monkey {
@@ -66,29 +68,89 @@ fn main() {
                     line.split(" ").last().unwrap().parse::<u32>().unwrap();
             } else if line.trim().starts_with("If true") {
                 current_monkey.next_monkey_if_true =
-                    line.split(" ").last().unwrap().parse::<u32>().unwrap();
+                    line.split(" ").last().unwrap().parse::<usize>().unwrap();
             } else if line.trim().starts_with("If false") {
                 current_monkey.next_monkey_if_false =
-                    line.split(" ").last().unwrap().parse::<u32>().unwrap();
+                    line.split(" ").last().unwrap().parse::<usize>().unwrap();
             }
         }
     }
 
-    // Print out the vector of monkeys
-    for monkey in &monkeys {
-        println!("Monkey:");
-        println!("  Starting items: {:?}", monkey.items);
-        println!("  Operation: {}", monkey.operation);
-        println!("  Test: divisible by {}", monkey.test_divisible_by);
-        println!(
-            "    If true: throw to monkey {}",
-            monkey.next_monkey_if_true
-        );
-        println!(
-            "    If false: throw to monkey {}",
-            monkey.next_monkey_if_false
-        );
+    // do 20 rounds of simulation
+    for _ in 0..20 {
+        for i in 0..monkeys.len() {
+            let monkey = &mut monkeys[i];
+
+            // First item in the tuple is the monkey to give to, second is the worry level to give
+            let mut to_throw: Vec<(usize, u32)> = Vec::new();
+
+            for item in &monkey.items {
+                monkey_index_to_num_inspected
+                    .entry(i)
+                    .and_modify(|e| *e += 1)
+                    .or_insert(1);
+
+                // apply operation
+                let mut operation_tokens = monkey.operation.split_whitespace();
+
+                let operand_1 = operation_tokens.next().unwrap();
+                let operator = operation_tokens.next().unwrap();
+                let operand_2 = operation_tokens.next().unwrap();
+
+                let operand_1_value = if operand_1 == "old" {
+                    *item
+                } else {
+                    operand_1.parse::<u32>().unwrap()
+                };
+
+                let operand_2_value = if operand_2 == "old" {
+                    *item
+                } else {
+                    operand_2.parse::<u32>().unwrap()
+                };
+
+                let new_item_intermediate = match operator {
+                    "*" => operand_1_value * operand_2_value,
+                    "+" => operand_1_value + operand_2_value,
+                    "-" => operand_1_value - operand_2_value,
+                    "/" => operand_1_value / operand_2_value,
+                    _ => panic!("Unknown operator"),
+                };
+
+                let new_item = new_item_intermediate / 3;
+
+                // now we determine which monkey to give to
+                let next_monkey = if new_item % monkey.test_divisible_by == 0 {
+                    monkey.next_monkey_if_true
+                } else {
+                    monkey.next_monkey_if_false
+                };
+
+                to_throw.push((next_monkey, new_item));
+            }
+
+            monkey.items = Vec::new();
+
+            for (monkey_to_throw_to, item) in to_throw {
+                monkeys[monkey_to_throw_to].items.push(item);
+            }
+        }
     }
+
+    // get values of monkey_index_to_num_inspected
+    let mut monkey_index_to_num_inspected_values: Vec<u32> = Vec::new();
+    for (_, v) in monkey_index_to_num_inspected {
+        monkey_index_to_num_inspected_values.push(v);
+    }
+
+    // sort them
+    monkey_index_to_num_inspected_values.sort();
+    monkey_index_to_num_inspected_values.reverse();
+
+    // multiply the first 2
+    let answer = monkey_index_to_num_inspected_values[0] * monkey_index_to_num_inspected_values[1];
+
+    println!("Answer: {}", answer);
 
     let duration = start.elapsed();
 
