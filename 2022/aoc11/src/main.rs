@@ -71,6 +71,12 @@ fn main() {
         }
     }
 
+    // multiply all of the test_divisible_by values
+    let mut test_divisible_by_product: u64 = 1;
+    for monkey in &monkeys {
+        test_divisible_by_product *= monkey.test_divisible_by;
+    }
+
     // do 20 rounds of simulation
     for _ in 0..10000 {
         for i in 0..monkeys.len() {
@@ -112,7 +118,7 @@ fn main() {
                     _ => panic!("Unknown operator"),
                 };
 
-                let new_item = new_item_intermediate % 9699690;
+                let new_item = new_item_intermediate % test_divisible_by_product;
 
                 // now we determine which monkey to give to
                 let next_monkey = if new_item % monkey.test_divisible_by == 0 {
