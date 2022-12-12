@@ -61,13 +61,15 @@ fn main() {
 
     let num_steps;
 
-    let mut visited_locations: HashSet<(i32, i32)> = HashSet::new();
+    let length: i32 = elevations[0].len() as i32;
+
+    let mut visited_locations: HashSet<i32> = HashSet::new();
     let mut current_locations: VecDeque<PointWithDistance> = VecDeque::new();
 
     // Since we're looking for the zero elevation location that has the shortest path to the end,
     // we can start at the end and work backwards -- the first zero elevation location we find
     // will be the shortest path to the end.
-    visited_locations.insert((ending_point.x, ending_point.y));
+    visited_locations.insert(ending_point.x * length + ending_point.y);
     current_locations.push_back(ending_point);
 
     'outer: loop {
@@ -96,7 +98,7 @@ fn main() {
         ];
 
         for next_loc in next_locs {
-            if visited_locations.contains(&(next_loc.x, next_loc.y)) {
+            if visited_locations.contains(&(next_loc.x * length + next_loc.y)) {
                 continue;
             }
 
@@ -119,7 +121,7 @@ fn main() {
                 break 'outer;
             }
 
-            visited_locations.insert((next_loc.x, next_loc.y));
+            visited_locations.insert(next_loc.x * length + next_loc.y);
             current_locations.push_back(next_loc);
         }
     }
