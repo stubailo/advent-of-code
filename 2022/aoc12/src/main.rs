@@ -59,6 +59,8 @@ fn main() {
         row_num += 1;
     }
 
+    println!("Time to read file is: {:?}", start.elapsed());
+
     let num_steps;
 
     let length: i32 = elevations[0].len() as i32;
@@ -128,7 +130,5 @@ fn main() {
 
     println!("Num steps: {}", num_steps);
 
-    let duration = start.elapsed();
-
-    println!("Time elapsed is: {:?}", duration);
+    println!("Time elapsed is: {:?}", start.elapsed());
 }
