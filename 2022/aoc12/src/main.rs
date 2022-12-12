@@ -57,6 +57,9 @@ fn main() {
     let mut visited_locations: HashSet<Point> = HashSet::new();
     let mut current_locations: Vec<Point> = Vec::new();
 
+    // Since we're looking for the zero elevation location that has the shortest path to the end,
+    // we can start at the end and work backwards -- the first zero elevation location we find
+    // will be the shortest path to the end.
     visited_locations.insert(ending_point);
     current_locations.push(ending_point);
 
