@@ -3,7 +3,6 @@ use std::collections::VecDeque;
 use std::fs;
 use std::time::Instant;
 
-#[derive(Copy, Clone, Eq, Hash, PartialEq)]
 struct PointWithDistance {
     x: i32,
     y: i32,
@@ -63,7 +62,7 @@ fn main() {
 
     let num_steps;
 
-    let length: i32 = elevations[0].len() as i32;
+    let row_length: i32 = elevations[0].len() as i32;
 
     let mut visited_locations: HashSet<i32> = HashSet::new();
     let mut current_locations: VecDeque<PointWithDistance> = VecDeque::new();
@@ -71,7 +70,7 @@ fn main() {
     // Since we're looking for the zero elevation location that has the shortest path to the end,
     // we can start at the end and work backwards -- the first zero elevation location we find
     // will be the shortest path to the end.
-    visited_locations.insert(ending_point.x * length + ending_point.y);
+    visited_locations.insert(ending_point.x * row_length + ending_point.y);
     current_locations.push_back(ending_point);
 
     'outer: loop {
@@ -100,12 +99,12 @@ fn main() {
         ];
 
         for next_loc in next_locs {
-            if visited_locations.contains(&(next_loc.x * length + next_loc.y)) {
+            if visited_locations.contains(&(next_loc.x * row_length + next_loc.y)) {
                 continue;
             }
 
             if next_loc.x >= elevations.len() as i32
-                || next_loc.y >= elevations[0].len() as i32
+                || next_loc.y >= row_length as i32
                 || next_loc.x < 0
                 || next_loc.y < 0
             {
@@ -123,7 +122,7 @@ fn main() {
                 break 'outer;
             }
 
-            visited_locations.insert(next_loc.x * length + next_loc.y);
+            visited_locations.insert(next_loc.x * row_length + next_loc.y);
             current_locations.push_back(next_loc);
         }
     }
