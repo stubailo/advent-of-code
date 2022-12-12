@@ -16,7 +16,6 @@ fn main() {
     let mut iter = contents.lines();
 
     let mut elevations: Vec<Vec<i32>> = Vec::new();
-
     let mut ending_point: Point = Point { x: 0, y: 0 };
 
     let mut row_num = 0;
@@ -53,101 +52,76 @@ fn main() {
         row_num += 1;
     }
 
-    // Make a vector of all Points in elevations with elevation 0
-    let mut starting_points: Vec<Point> = Vec::new();
-    for i in 0..elevations.len() {
-        for j in 0..elevations[0].len() {
-            if elevations[i][j] == 0 {
-                starting_points.push(Point {
-                    x: i as i32,
-                    y: j as i32,
-                });
-            }
+    let mut num_steps = 0;
+
+    let mut visited_locations: HashSet<Point> = HashSet::new();
+    let mut current_locations: Vec<Point> = Vec::new();
+
+    visited_locations.insert(ending_point);
+    current_locations.push(ending_point);
+
+    'outer: loop {
+        num_steps += 1;
+
+        // break outer if there are no more current locations
+        if current_locations.len() == 0 {
+            break 'outer;
         }
-    }
 
-    let mut min_num_steps = std::i32::MAX;
+        let mut next_locations: Vec<Point> = Vec::new();
 
-    for starting_point in starting_points {
-        let mut num_steps = 0;
-        let mut found = false;
+        for loc in current_locations {
+            let next_locs = vec![
+                Point {
+                    x: loc.x + 1,
+                    y: loc.y,
+                },
+                Point {
+                    x: loc.x - 1,
+                    y: loc.y,
+                },
+                Point {
+                    x: loc.x,
+                    y: loc.y + 1,
+                },
+                Point {
+                    x: loc.x,
+                    y: loc.y - 1,
+                },
+            ];
 
-        let mut visited_locations: HashSet<Point> = HashSet::new();
-        let mut current_locations: Vec<Point> = Vec::new();
-
-        visited_locations.insert(starting_point);
-        current_locations.push(starting_point);
-
-        'outer: loop {
-            num_steps += 1;
-
-            // break outer if there are no more current locations
-            if current_locations.len() == 0 {
-                break 'outer;
-            }
-
-            let mut next_locations: Vec<Point> = Vec::new();
-
-            for loc in current_locations {
-                let next_locs = vec![
-                    Point {
-                        x: loc.x + 1,
-                        y: loc.y,
-                    },
-                    Point {
-                        x: loc.x - 1,
-                        y: loc.y,
-                    },
-                    Point {
-                        x: loc.x,
-                        y: loc.y + 1,
-                    },
-                    Point {
-                        x: loc.x,
-                        y: loc.y - 1,
-                    },
-                ];
-
-                for next_loc in next_locs {
-                    if visited_locations.contains(&next_loc) {
-                        continue;
-                    }
-
-                    if next_loc.x >= elevations.len() as i32
-                        || next_loc.y >= elevations[0].len() as i32
-                        || next_loc.x < 0
-                        || next_loc.y < 0
-                    {
-                        continue;
-                    }
-
-                    if elevations[next_loc.x as usize][next_loc.y as usize]
-                        > elevations[loc.x as usize][loc.y as usize] + 1
-                    {
-                        continue;
-                    }
-
-                    if next_loc == ending_point {
-                        found = true;
-                        break 'outer;
-                    }
-
-                    visited_locations.insert(next_loc);
-                    next_locations.push(next_loc);
+            for next_loc in next_locs {
+                if visited_locations.contains(&next_loc) {
+                    continue;
                 }
-            }
 
-            current_locations = next_locations;
+                if next_loc.x >= elevations.len() as i32
+                    || next_loc.y >= elevations[0].len() as i32
+                    || next_loc.x < 0
+                    || next_loc.y < 0
+                {
+                    continue;
+                }
+
+                if elevations[next_loc.x as usize][next_loc.y as usize]
+                    < elevations[loc.x as usize][loc.y as usize] - 1
+                {
+                    continue;
+                }
+
+                if elevations[next_loc.x as usize][next_loc.y as usize] == 0 {
+                    break 'outer;
+                }
+
+                visited_locations.insert(next_loc);
+                next_locations.push(next_loc);
+            }
         }
 
-        if found {
-            if num_steps < min_num_steps {
-                min_num_steps = num_steps;
-            }
-        }
+        current_locations = next_locations;
     }
 
-    println!("Num steps: {}", min_num_steps);
+    println!("Num steps: {}", num_steps);
 
     let duration = start.elapsed();
 
