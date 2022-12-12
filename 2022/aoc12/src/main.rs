@@ -72,7 +72,7 @@ fn main() {
 
     'outer: loop {
         let loc = current_locations.pop_front().unwrap();
-        let next_locs = vec![
+        let next_locs = [
             PointWithDistance {
                 x: loc.x + 1,
                 y: loc.y,
