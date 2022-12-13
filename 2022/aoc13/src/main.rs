@@ -1,3 +1,4 @@
+use core::iter::Peekable;
 use core::str::Chars;
 use std::fs;
 use std::time::Instant;
@@ -8,6 +9,13 @@ struct VecOrNum {
     num: i32,
 }
 
+#[derive(PartialEq, Debug)]
+enum TrueFalseOrNoDecision {
+    True,
+    False,
+    NoDecision,
+}
+
 fn main() {
     let start = Instant::now();
 
@@ -15,10 +23,7 @@ fn main() {
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
     let mut iter = contents.lines();
 
-    let mut on_line_1 = true;
-    let mut line1 = "";
-    let mut line2: &str;
-    let mut _pair_index = 0;
+    let mut parsed_lines: Vec<VecOrNum> = Vec::new();
 
     loop {
         let line = iter.next();
@@ -30,44 +35,79 @@ fn main() {
         let line = line.unwrap();
 
         if line.is_empty() {
-            on_line_1 = true;
             continue;
         }
 
-        if on_line_1 {
-            line1 = line;
-            on_line_1 = false;
+        let mut line_iter = line.chars().peekable();
+
+        let line_parsed = parse(&mut line_iter);
+
+        parsed_lines.push(line_parsed);
+    }
+
+    parsed_lines.push(parse(&mut "[[2]]".chars().peekable()));
+    parsed_lines.push(parse(&mut "[[6]]".chars().peekable()));
+
+    parsed_lines.sort_by(|a, b| {
+        let result = in_correct_order(a, b);
+
+        if result == TrueFalseOrNoDecision::True {
+            return std::cmp::Ordering::Less;
+        } else if result == TrueFalseOrNoDecision::False {
+            return std::cmp::Ordering::Greater;
         } else {
-            line2 = line;
-            on_line_1 = true;
+            return std::cmp::Ordering::Equal;
+        }
+    });
 
-            // time to process
-            _pair_index += 1;
+    // go through parsed_lines and find the indices for [[2]] and [[6]]
+    let mut index_of_2 = 0;
+    let mut index_of_6 = 0;
 
-            let mut line1_iter = line1.chars();
-            let mut line2_iter = line2.chars();
+    for i in 0..parsed_lines.len() {
+        let parsed = &parsed_lines[i];
 
-            let line1_parsed = parse(&mut line1_iter);
-            let line2_parsed = parse(&mut line2_iter);
-
-            println!("PARSED");
-            print(&line1_parsed);
-            print(&line2_parsed);
+        if parsed.is_vec
+            && parsed.vec.len() == 1
+            && parsed.vec[0].is_vec
+            && parsed.vec[0].vec.len() == 1
+            && parsed.vec[0].vec[0].num == 2
+        {
+            index_of_2 = i + 1;
+        } else if parsed.is_vec
+            && parsed.vec.len() == 1
+            && parsed.vec[0].is_vec
+            && parsed.vec[0].vec.len() == 1
+            && parsed.vec[0].vec[0].num == 6
+        {
+            index_of_6 = i + 1;
         }
     }
+
+    // print both indices
+    println!("Index of 2 is: {}", index_of_2);
+    println!("Index of 6 is: {}", index_of_6);
+
+    // multiply them and print the result
+    let result = index_of_2 * index_of_6;
+
+    println!("Result is: {}", result);
 
     println!("Time elapsed is: {:?}", start.elapsed());
 }
 
-fn parse(chars: &mut Chars) -> VecOrNum {
+fn parse(chars: &mut Peekable<Chars>) -> VecOrNum {
     let next_char = chars.next().unwrap();
 
     if next_char.is_digit(10) {
         let mut number = next_char.to_digit(10).unwrap() as i32;
 
         loop {
-            let next_char = chars.next().unwrap();
-            if next_char.is_digit(10) {
+            let peek = chars.peek().unwrap();
+
+            if peek.is_digit(10) {
+                let next_char = chars.next().unwrap();
+
                 number = number * 10 + next_char.to_digit(10).unwrap() as i32;
             } else {
                 break;
@@ -83,10 +123,13 @@ fn parse(chars: &mut Chars) -> VecOrNum {
         let mut vec = Vec::new();
 
         loop {
-            let next_char = chars.next().unwrap();
-            if next_char == ']' {
+            let peek = chars.peek().unwrap();
+
+            if *peek == ']' {
+                chars.next();
                 break;
-            } else if next_char == ',' {
+            } else if *peek == ',' {
+                chars.next();
                 continue;
             } else {
                 let parsed = parse(chars);
@@ -99,8 +142,6 @@ fn parse(chars: &mut Chars) -> VecOrNum {
             vec,
             num: 0,
         };
-    } else if next_char == ',' || next_char == ']' {
-        return parse(chars);
     } else {
         panic!("Unexpected character {}", next_char);
     }
@@ -110,10 +151,92 @@ fn print(parsed: &VecOrNum) {
     if parsed.is_vec {
         print!("[");
         for i in 0..parsed.vec.len() {
-            print!("{}, ", parsed.vec[i].num);
+            if i != 0 {
+                print!(",");
+            }
+
+            print(&parsed.vec[i]);
         }
         print!("]");
     } else {
         print!("{}", parsed.num);
     }
+}
+
+fn in_correct_order(parsedl: &VecOrNum, parsedr: &VecOrNum) -> TrueFalseOrNoDecision {
+    let result: TrueFalseOrNoDecision;
+
+    if !parsedl.is_vec && !parsedr.is_vec {
+        if parsedl.num < parsedr.num {
+            result = TrueFalseOrNoDecision::True;
+        } else if parsedl.num > parsedr.num {
+            result = TrueFalseOrNoDecision::False;
+        } else {
+            result = TrueFalseOrNoDecision::NoDecision;
+        }
+    } else if parsedl.is_vec && !parsedr.is_vec {
+        let new_struct = VecOrNum {
+            is_vec: true,
+            vec: vec![VecOrNum {
+                is_vec: false,
+                vec: Vec::new(),
+                num: parsedr.num,
+            }],
+            num: 0,
+        };
+
+        result = in_correct_order(parsedl, &new_struct);
+    } else if !parsedl.is_vec && parsedr.is_vec {
+        let new_struct = VecOrNum {
+            is_vec: true,
+            vec: vec![VecOrNum {
+                is_vec: false,
+                vec: Vec::new(),
+                num: parsedl.num,
+            }],
+            num: 0,
+        };
+
+        result = in_correct_order(&new_struct, parsedr);
+    } else {
+        // both are vecs
+        let mut i = 0;
+
+        loop {
+            if i >= parsedl.vec.len() && i >= parsedr.vec.len() {
+                result = TrueFalseOrNoDecision::NoDecision;
+                break;
+            } else if i >= parsedl.vec.len() {
+                result = TrueFalseOrNoDecision::True;
+                break;
+            } else if i >= parsedr.vec.len() {
+                result = TrueFalseOrNoDecision::False;
+                break;
+            }
+
+            let left = &parsedl.vec[i];
+            let right = &parsedr.vec[i];
+
+            let intermediate_result = in_correct_order(left, right);
+
+            if intermediate_result == TrueFalseOrNoDecision::True
+                || intermediate_result == TrueFalseOrNoDecision::False
+            {
+                result = intermediate_result;
+                break;
+            }
+
+            i += 1;
+        }
+    }
+
+    println!("COMPARED:");
+    print(&parsedl);
+    println!();
+    print(&parsedr);
+    println!();
+    println!("CORRECT: {:?}", result);
+    println!();
+
+    return result;
 }
