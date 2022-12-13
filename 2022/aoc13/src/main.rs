@@ -84,10 +84,6 @@ fn main() {
         }
     }
 
-    // print both indices
-    println!("Index of 2 is: {}", index_of_2);
-    println!("Index of 6 is: {}", index_of_6);
-
     // multiply them and print the result
     let result = index_of_2 * index_of_6;
 
@@ -230,13 +226,13 @@ fn in_correct_order(parsedl: &VecOrNum, parsedr: &VecOrNum) -> TrueFalseOrNoDeci
         }
     }
 
-    println!("COMPARED:");
-    print(&parsedl);
-    println!();
-    print(&parsedr);
-    println!();
-    println!("CORRECT: {:?}", result);
-    println!();
+    // println!("COMPARED:");
+    // print(&parsedl);
+    // println!();
+    // print(&parsedr);
+    // println!();
+    // println!("CORRECT: {:?}", result);
+    // println!();
 
     return result;
 }
