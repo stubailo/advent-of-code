@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::collections::VecDeque;
 use std::fs;
 use std::time::Instant;
 
@@ -63,6 +64,40 @@ fn main() {
         }
     }
 
+    let floor_y = largest_y + 2;
+
+    num_grains_fast(&mut set_of_occupied_points, floor_y);
+
+    println!("Time elapsed is: {:?}", start.elapsed());
+}
+
+fn num_grains_fast(set_of_occupied_points: &mut HashSet<(i32, i32)>, floor_y: i32) {
+    let mut num_grains_fast = 1;
+    let mut queue: VecDeque<(i32, i32)> = VecDeque::new();
+    queue.push_back((500, 0));
+
+    loop {
+        let loc = queue.pop_front();
+
+        if loc.is_none() {
+            break;
+        }
+
+        let (x, y) = loc.unwrap();
+
+        for next_loc in [(x, y + 1), (x - 1, y + 1), (x + 1, y + 1)] {
+            if next_loc.1 < floor_y && !set_of_occupied_points.contains(&next_loc) {
+                queue.push_back(next_loc);
+                set_of_occupied_points.insert(next_loc);
+                num_grains_fast += 1;
+            }
+        }
+    }
+
+    println!("Num grains of sand (fast): {}", num_grains_fast);
+}
+
+fn num_grains_slow(set_of_occupied_points: &mut HashSet<(i32, i32)>, floor_y: i32) {
     let mut num_grains_of_sand = 0;
 
     loop {
@@ -74,13 +109,9 @@ fn main() {
         loop {
             let (x, y) = sand_location;
 
-            if y > largest_y + 3 {
-                panic!("Sand location is too high");
-            }
-
             let mut found_next_loc = false;
             for next_loc in [(x, y + 1), (x - 1, y + 1), (x + 1, y + 1)] {
-                if next_loc.1 < largest_y + 2 && !set_of_occupied_points.contains(&next_loc) {
+                if next_loc.1 < floor_y && !set_of_occupied_points.contains(&next_loc) {
                     sand_location = next_loc;
                     found_next_loc = true;
                     break;
@@ -108,6 +139,4 @@ fn main() {
 
     // print num grains
     println!("Num grains of sand: {}", num_grains_of_sand);
-
-    println!("Time elapsed is: {:?}", start.elapsed());
 }
