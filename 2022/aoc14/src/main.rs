@@ -69,7 +69,6 @@ fn main() {
         // simulate one grain of sand falling, and see if set of occupied points increases in size
 
         let mut sand_location = (500, 0);
-
         let mut is_last_grain = false;
 
         loop {
@@ -92,7 +91,6 @@ fn main() {
                 // we have reached an end point
                 set_of_occupied_points.insert(sand_location);
 
-                // print sand_location
                 num_grains_of_sand += 1;
 
                 if sand_location == (500, 0) {
