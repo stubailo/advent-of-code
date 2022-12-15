@@ -37,7 +37,7 @@ fn main() {
 
     let mut points_to_check: HashSet<(i32, i32)> = HashSet::new();
 
-    let max_x_y = 20;
+    let max_x_y = 4000000;
 
     // print how many sensors
     println!("Sensors: {}", sensors.len());
@@ -48,8 +48,11 @@ fn main() {
             if x < 0 || x > max_x_y {
                 continue;
             }
-            let y1 = sensor.2 - (sensor.2 - (x - sensor.0).abs()) - 1;
-            let y2 = sensor.2 + (sensor.2 - (x - sensor.0).abs()) + 1;
+
+            let spread = ((sensor.0 - x).abs() - (sensor.2 + 1)).abs();
+
+            let y1 = sensor.1 + spread;
+            let y2 = sensor.1 - spread;
 
             if y1 >= 0 && y1 <= max_x_y {
                 points_to_check.insert((x, y1));
@@ -57,21 +60,6 @@ fn main() {
             if y2 >= 0 && y2 <= max_x_y {
                 points_to_check.insert((x, y2));
             }
-
-            // add all points within 1 of x, y1 and x, y2
-
-            // for x in (x - 1)..=(x + 1) {
-            //     for y in (y1 - 1)..=(y1 + 1) {
-            //         if x >= 0 && x <= max_x_y && y >= 0 && y <= max_x_y {
-            //             points_to_check.insert((x, y));
-            //         }
-            //     }
-            //     for y in (y2 - 1)..=(y2 + 1) {
-            //         if x >= 0 && x <= max_x_y && y >= 0 && y <= max_x_y {
-            //             points_to_check.insert((x, y));
-            //         }
-            //     }
-            // }
         }
     }
 
