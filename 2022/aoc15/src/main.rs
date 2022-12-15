@@ -3,9 +3,7 @@ use std::time::Instant;
 
 fn main() {
     let start = Instant::now();
-
-    let file_path = "input.txt";
-    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let contents = fs::read_to_string("input.txt").expect("Should have been able to read the file");
     let mut iter = contents.lines();
 
     loop {
