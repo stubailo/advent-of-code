@@ -84,7 +84,7 @@ fn main() {
 
         if !within_sensor_distance {
             println!("({}, {})", x, y);
-            let result = x * 4000000 + y;
+            let result = (x as u64) * 4000000 + (y as u64);
             println!("Result: {}", result);
             break;
         }
