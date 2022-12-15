@@ -7,8 +7,6 @@ fn main() {
     let contents = fs::read_to_string("input.txt").expect("Should have been able to read the file");
     let mut iter = contents.lines();
 
-    let mut points_that_cant_contain_a_beacon: HashSet<(i32, i32)> = HashSet::new();
-
     // x, y, distance
     let mut sensors: Vec<(i32, i32, i32)> = Vec::new();
 
