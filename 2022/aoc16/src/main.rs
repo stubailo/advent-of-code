@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs;
+use std::ops::Sub;
 use std::time::Instant;
 
 struct Valve {
@@ -41,7 +42,7 @@ fn main() {
         valves.insert(valve.name.clone(), valve);
     }
 
-    let non_zero_valves: HashSet<String> = HashSet::from_iter(
+    let mut non_zero_valves: HashSet<String> = HashSet::from_iter(
         valves
             .iter()
             .filter(|(_, v)| v.flow_rate > 0 || v.name == "AA")
@@ -80,12 +81,76 @@ fn main() {
         distances.insert(name.to_string(), distance_map);
     }
 
+    non_zero_valves.remove("AA");
+
+    // OK so here's my trick --
+    // the amount of pressure is totally independent between me and the elephant
+    // so I go to some locations, and the elephant goes to a different set of locations, and
+    // we just add up the result
+
+    // so I reduced part 1 to part 2 by dividing all of the valves that have non-zero pressure
+    // into all possible combinations of two sets of valves, and giving each subset to me or
+    // the elephant and then just running the part 1 solution and adding it up
+
+    // my trick for part 1 which was important for this to run fast enough is to pre-generate
+    // a graph of distances between all valves that have non-zero flow, and ignore the ones that
+    // have zero flow completely
+
+    // generate all subsets of non_zero_values into a vector
+    let mut subsets: Vec<HashSet<String>> = Vec::new();
+
+    for i in 0..(1 << non_zero_valves.len()) {
+        let mut subset: HashSet<String> = HashSet::new();
+
+        for (j, valve) in non_zero_valves.iter().enumerate() {
+            if i & (1 << j) != 0 {
+                subset.insert(valve.to_string());
+            }
+        }
+
+        subsets.push(subset);
+    }
+
+    println!("Number of subsets is: {}", subsets.len());
+
+    let mut max_final_pressure = 0 as u64;
+
+    let mut i = 0;
+
+    // print all subsets
+    for subset in &subsets {
+        let max_final_pressure1 = get_best_pressure(&valves, &distances, &subset);
+        let max_final_pressure2 =
+            get_best_pressure(&valves, &distances, &non_zero_valves.sub(&subset));
+
+        let final_pressure = max_final_pressure1 + max_final_pressure2;
+
+        if final_pressure > max_final_pressure {
+            max_final_pressure = final_pressure;
+        }
+
+        i += 1;
+
+        if (i % 1000) == 0 {
+            println!("At index: {}", i);
+        }
+    }
+
+    println!("Max final pressure is: {}", max_final_pressure);
+
+    println!("Time elapsed is: {:?}", start.elapsed());
+}
+
+fn get_best_pressure(
+    valves: &HashMap<String, Valve>,
+    distances: &HashMap<String, HashMap<String, u64>>,
+    allowed_valves: &HashSet<String>,
+) -> u64 {
     let mut queue: VecDeque<(Vec<String>, u64, u64, u64)> = VecDeque::new();
 
     queue.push_back((vec!["AA".to_string()], 0, 0, 0));
 
     let mut max_final_pressure = 0 as u64;
-    let mut final_path: Vec<String> = vec![];
 
     loop {
         let next = queue.pop_front();
@@ -99,13 +164,16 @@ fn main() {
         let current_valve = current_path.last().unwrap();
 
         for (valve, distance) in distances.get(current_valve).unwrap() {
+            if !allowed_valves.contains(valve) {
+                continue;
+            }
+
             let new_time = current_time + distance + 1;
 
-            if current_path.contains(valve) || new_time > 30 {
-                let final_pressure = total_pressure + current_valve_pressure * (30 - current_time);
+            if current_path.contains(valve) || new_time > 26 {
+                let final_pressure = total_pressure + current_valve_pressure * (26 - current_time);
                 if final_pressure > max_final_pressure {
                     max_final_pressure = final_pressure;
-                    final_path = current_path.clone();
                 }
                 continue;
             }
@@ -121,8 +189,5 @@ fn main() {
         }
     }
 
-    println!("Max final pressure is: {}", max_final_pressure);
-    println!("Final path is: {:?}", final_path);
-
-    println!("Time elapsed is: {:?}", start.elapsed());
+    return max_final_pressure;
 }
