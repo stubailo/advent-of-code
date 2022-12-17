@@ -183,13 +183,6 @@ fn main() {
             println!("Cycle start: {}", rock_index % cycle_detection_set.len());
             println!("Height diff this cycle: {}", cur_height - last_height);
 
-            print_board(
-                &stopped_rocks,
-                &HashMap::new(),
-                cur_height + 3,
-                cur_height - 20,
-            );
-
             if rock_index > 59829 && cur_height - last_height == 2796 {
                 // print top few rows of board
                 print_board(
