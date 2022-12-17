@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::time::Instant;
 
@@ -51,7 +51,17 @@ fn main() {
 
     let mut air_puff_index = 0;
 
-    for rock_index in 0..2022 {
+    // print number of air puffs
+    println!("Number of air puffs: {}", air_puffs.len());
+
+    // hashset should keep track of: which puff index we are on, which rock index we are on, and
+    // which x position it stops at
+    let mut cycle_detection_set: HashSet<(usize, usize, i32)> = HashSet::new();
+
+    // cycle length is always 1750, but we need the difference to be the same
+    let mut last_height = 0;
+
+    for rock_index in 0..1000000000000 {
         let rock_type = rock_index % 5;
         if DEBUG {
             println!("New rock: {}", rock_type);
@@ -63,7 +73,7 @@ fn main() {
 
         if DEBUG {
             println!("Initial board state:");
-            print_board(&stopped_rocks, &falling_rocks, cur_height + 10);
+            print_board(&stopped_rocks, &falling_rocks, cur_height + 10, 0);
         }
 
         // now, simulate the rock getting puffed and also falling
@@ -105,7 +115,9 @@ fn main() {
                 falling_rocks = puffed_falling_rocks;
             }
 
-            print_board(&stopped_rocks, &falling_rocks, cur_height + 10);
+            if DEBUG {
+                print_board(&stopped_rocks, &falling_rocks, cur_height + 10, 0);
+            }
 
             // now, fall
             let mut fallen_falling_rocks: HashMap<(u64, i32), char> = HashMap::new();
@@ -134,13 +146,22 @@ fn main() {
                 falling_rocks = fallen_falling_rocks;
             }
 
-            print_board(&stopped_rocks, &falling_rocks, cur_height + 10);
+            if DEBUG {
+                print_board(&stopped_rocks, &falling_rocks, cur_height + 10, 0);
+            }
         }
 
         // now, move the falling rocks to the stopped rocks
+
+        let mut left_most_x = MAX_WIDTH;
         for ((row, x), val) in falling_rocks.iter() {
             if *val == falling_rock_char {
                 stopped_rocks.insert((*row, *x), stopped_rock_char);
+
+                if *x < left_most_x {
+                    left_most_x = *x;
+                }
+
                 if *row + 1 > cur_height {
                     if DEBUG {
                         println!("Updating cur_height to {}", *row + 1);
@@ -149,11 +170,42 @@ fn main() {
                 }
             }
         }
+
+        if (rock_index % 1813) == 0 {
+            println!("Rock index: {}", rock_index);
+            println!("Height at cycle: {}", cur_height);
+        }
+
+        let new_set_item = (air_puff_index, rock_type, left_most_x);
+
+        if cycle_detection_set.contains(&new_set_item) {
+            println!("Cycle detected!");
+            println!("Cycle length: {}", cycle_detection_set.len());
+            println!("Height diff this cycle: {}", cur_height - last_height);
+
+            if rock_index > 59829 && cur_height - last_height == 2796 {
+                // print top few rows of board
+                print_board(
+                    &stopped_rocks,
+                    &HashMap::new(),
+                    cur_height + 3,
+                    cur_height - 40,
+                );
+                break;
+            }
+
+            last_height = cur_height;
+            cycle_detection_set = HashSet::new();
+            // print new set item
+            // break;
+        }
+
+        cycle_detection_set.insert(new_set_item);
     }
 
-    if (DEBUG) {
+    if DEBUG {
         println!("Final board state:");
-        print_board(&stopped_rocks, &HashMap::new(), cur_height + 10);
+        print_board(&stopped_rocks, &HashMap::new(), cur_height + 10, 0);
     }
 
     println!("Height: {}", cur_height);
@@ -200,12 +252,9 @@ fn print_board(
     stopped_rocks: &HashMap<(u64, i32), char>,
     falling_rocks: &HashMap<(u64, i32), char>,
     max_row: u64,
+    min_row: u64,
 ) {
-    if !DEBUG {
-        return;
-    }
-
-    for cur_row in (0..=max_row).rev() {
+    for cur_row in (min_row..=max_row).rev() {
         let mut row = String::new();
 
         for x in 0..MAX_WIDTH {
