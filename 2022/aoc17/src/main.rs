@@ -61,6 +61,8 @@ fn main() {
     // cycle length is always 1750, but we need the difference to be the same
     let mut last_height = 0;
 
+    let mut detected_cycle_at: usize = 0;
+
     for rock_index in 0..1000000000000 {
         let rock_type = rock_index % 5;
         if DEBUG {
@@ -171,17 +173,22 @@ fn main() {
             }
         }
 
-        if (rock_index % 1813) == 0 {
-            println!("Rock index: {}", rock_index);
-            println!("Height at cycle: {}", cur_height);
-        }
-
         let new_set_item = (air_puff_index, rock_type, left_most_x);
 
         if cycle_detection_set.contains(&new_set_item) {
             println!("Cycle detected!");
+            println!("Current index: {}", rock_index);
+            println!("Current height: {}", cur_height);
             println!("Cycle length: {}", cycle_detection_set.len());
+            println!("Cycle start: {}", rock_index % cycle_detection_set.len());
             println!("Height diff this cycle: {}", cur_height - last_height);
+
+            print_board(
+                &stopped_rocks,
+                &HashMap::new(),
+                cur_height + 3,
+                cur_height - 20,
+            );
 
             if rock_index > 59829 && cur_height - last_height == 2796 {
                 // print top few rows of board
@@ -189,15 +196,22 @@ fn main() {
                     &stopped_rocks,
                     &HashMap::new(),
                     cur_height + 3,
-                    cur_height - 40,
+                    cur_height - 20,
                 );
-                break;
+                detected_cycle_at = rock_index;
             }
 
             last_height = cur_height;
             cycle_detection_set = HashSet::new();
             // print new set item
             // break;
+        }
+
+        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 687 {
+            let height_diff = cur_height - last_height;
+
+            println!("Height diff: {}", height_diff);
+            break;
         }
 
         cycle_detection_set.insert(new_set_item);
