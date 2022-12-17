@@ -200,7 +200,7 @@ fn main() {
             // break;
         }
 
-        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 1 {
+        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 34 {
             let height_diff = cur_height - last_height;
 
             println!("Height diff: {}", height_diff);
