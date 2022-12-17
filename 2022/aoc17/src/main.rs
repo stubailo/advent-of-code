@@ -183,7 +183,7 @@ fn main() {
             println!("Cycle start: {}", rock_index % cycle_detection_set.len());
             println!("Height diff this cycle: {}", cur_height - last_height);
 
-            if rock_index > 59829 && cur_height - last_height == 2796 {
+            if rock_index > 2000 {
                 // print top few rows of board
                 print_board(
                     &stopped_rocks,
@@ -200,7 +200,7 @@ fn main() {
             // break;
         }
 
-        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 687 {
+        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 1 {
             let height_diff = cur_height - last_height;
 
             println!("Height diff: {}", height_diff);
