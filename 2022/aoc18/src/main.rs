@@ -63,7 +63,9 @@ fn main() {
             let new_y = y + dy;
             let new_z = z + dz;
 
-            if air_point_is_trapped.contains_key(&(new_x, new_y, new_z)) {
+            if air_point_is_trapped.contains_key(&(new_x, new_y, new_z))
+                || points.contains(&(new_x, new_y, new_z))
+            {
                 continue;
             }
 
