@@ -1,0 +1,238 @@
+Number of air puffs: 10091
+Cycle detected!
+Current index: 1813
+Current height: 2889
+Cycle length: 1813
+Cycle start: 0
+Height diff this cycle: 2889
+Cycle detected!
+Current index: 3563
+Current height: 5685
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 5313
+Current height: 8481
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 7063
+Current height: 11277
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 8813
+Current height: 14073
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 10563
+Current height: 16869
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 12313
+Current height: 19665
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 14063
+Current height: 22461
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 15813
+Current height: 25257
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 17563
+Current height: 28053
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 19313
+Current height: 30849
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 21063
+Current height: 33645
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 22813
+Current height: 36441
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 24563
+Current height: 39237
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 26313
+Current height: 42033
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 28063
+Current height: 44829
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 29813
+Current height: 47625
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 31563
+Current height: 50421
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 33313
+Current height: 53217
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 35063
+Current height: 56013
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 36813
+Current height: 58809
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 38563
+Current height: 61605
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 40313
+Current height: 64401
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 42063
+Current height: 67197
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 43813
+Current height: 69993
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 45563
+Current height: 72789
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 47313
+Current height: 75585
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 49063
+Current height: 78381
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 50813
+Current height: 81177
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 52563
+Current height: 83973
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 54313
+Current height: 86769
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 56063
+Current height: 89565
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 57813
+Current height: 92361
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 59563
+Current height: 95157
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+Cycle detected!
+Current index: 61313
+Current height: 97953
+Cycle length: 1750
+Cycle start: 63
+Height diff this cycle: 2796
+97956 .......
+97955 .......
+97954 .......
+97953 .......
+97952 ....#..
+97951 ....#..
+97950 ....#..
+97949 ....#..
+97948 ....#..
+97947 ....#..
+97946 ..####.
+97945 ....###
+97944 .....#.
+97943 ..####.
+97942 ...###.
+97941 ...###.
+97940 .####..
+97939 ...###.
+97938 ....#..
+97937 ..####.
+97936 ...###.
+97935 #.####.
+97934 #.####.
+97933 #.#####
+Height diff: 1090
+Height: 99043
+Time elapsed is: 283.527333ms
