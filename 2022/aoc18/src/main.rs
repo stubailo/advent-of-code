@@ -99,10 +99,6 @@ fn main() {
                     continue;
                 }
 
-                if air_point_is_trapped.get(&(x, y, z)) == Some(&true) {
-                    continue;
-                }
-
                 points_visited.insert((x, y, z));
 
                 queue.push_back((x + 1, y, z));
