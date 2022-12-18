@@ -58,9 +58,15 @@ fn main() {
     // which x position it stops at
     let mut cycle_detection_set: HashSet<(usize, usize, i32)> = HashSet::new();
 
+    // before cycle number of rocks and height
+    let mut before_cycle_num_rocks = 0;
+    let mut before_cycle_height = 0;
+
     // cycle length is always 1750, but we need the difference to be the same
     let mut last_height = 0;
 
+    // we need to find a cycle
+    let mut last_cycle_num_rocks = 0;
     let mut detected_cycle_at: usize = 0;
 
     for rock_index in 0..1000000000000 {
@@ -200,7 +206,7 @@ fn main() {
             // break;
         }
 
-        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 34 {
+        if detected_cycle_at > 0 && rock_index == detected_cycle_at + 686 {
             let height_diff = cur_height - last_height;
 
             println!("Height diff: {}", height_diff);
