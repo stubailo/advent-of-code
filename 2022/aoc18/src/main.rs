@@ -65,6 +65,12 @@ fn main() {
 
             if air_point_is_trapped.contains_key(&(new_x, new_y, new_z))
                 || points.contains(&(new_x, new_y, new_z))
+                || new_x < min_bounds.0
+                || new_x > max_bounds.0
+                || new_y < min_bounds.1
+                || new_y > max_bounds.1
+                || new_z < min_bounds.2
+                || new_z > max_bounds.2
             {
                 continue;
             }
@@ -107,6 +113,11 @@ fn main() {
                 queue.push_back((x, y, z - 1));
             }
 
+            // add all points visited
+            for (x, y, z) in points_visited {
+                air_point_is_trapped.insert((x, y, z), trapped);
+            }
+
             air_point_is_trapped.insert((new_x, new_y, new_z), trapped);
         }
     }
@@ -127,7 +138,7 @@ fn main() {
             let new_z = z + dz;
 
             if !points.contains(&(new_x, new_y, new_z))
-                && air_point_is_trapped.get(&(new_x, new_y, new_z)) == Some(&false)
+                && air_point_is_trapped.get(&(new_x, new_y, new_z)) != Some(&true)
             {
                 num_unobstructed_faces += 1;
             }
