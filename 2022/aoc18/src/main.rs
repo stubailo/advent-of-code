@@ -65,12 +65,6 @@ fn main() {
 
             if air_point_is_trapped.contains_key(&(new_x, new_y, new_z))
                 || points.contains(&(new_x, new_y, new_z))
-                || new_x < min_bounds.0
-                || new_x > max_bounds.0
-                || new_y < min_bounds.1
-                || new_y > max_bounds.1
-                || new_z < min_bounds.2
-                || new_z > max_bounds.2
             {
                 continue;
             }
