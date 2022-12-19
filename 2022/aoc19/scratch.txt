@@ -1,0 +1,38 @@
+
+
+Current index:                59829
+Height:                       95580
+
+Height diff per cycle:        2796
+Full cycles left:             floor((1000000000000 - 59829) / 1750) = 571428537
+Height from full cycles:      1597714189452
+
+Height after all full cycles: 1597714285032
+
+Remaining rocks:              1000000000000 - 59829 - 1750 * 571428537 = 687
+Height after 421 more rocks:  687
+
+Total height:                 1597714285032 + 687 = 1597714285719
+
+One less:                     1597714285032 + 685 = 1597714285717
+
+
+
+
+
+
+To calculate any height:
+
+(index - 1813) / 1750 * 2796 + 2889
+
+(index - 1813) / 1750 * 2796 + 2889
+
+
+
+(1000000000000 - 1813) mod 1750 = 687
+
+(1000000000000 - 687 - 1813) / 1750 * 2796 + 2889 = 1597714284609
+
+1597714284609 + 1090 = 1597714285699
+
+what if it was 1093
