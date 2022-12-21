@@ -75,6 +75,7 @@ fn main() {
             let mut new_index = current_index + (n.abs() % num_of_numbers_minus_one) * n.signum();
 
             if new_index < 0 {
+                new_index = new_index + num_of_numbers * (new_index.abs() / num_of_numbers);
                 loop {
                     new_index = new_index + num_of_numbers;
                     if new_index > 0 {
@@ -82,12 +83,7 @@ fn main() {
                     }
                 }
             } else if new_index >= num_of_numbers {
-                loop {
-                    new_index = new_index - num_of_numbers;
-                    if new_index < num_of_numbers {
-                        break;
-                    }
-                }
+                new_index = new_index % num_of_numbers;
             }
 
             if n < 0 && new_index > current_index {
