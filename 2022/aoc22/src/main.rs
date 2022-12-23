@@ -19,6 +19,7 @@ fn main() {
 
     let mut board: HashMap<(i32, i32), char> = HashMap::new();
 
+    let mut num_points = 0;
     let mut y = 0;
     loop {
         let line = iter.next();
@@ -39,10 +40,15 @@ fn main() {
             }
 
             board.insert((y, i as i32), c);
+            num_points += 1;
         }
 
         y += 1;
     }
+
+    let edge_length = ((num_points / 6) as f32).sqrt();
+    // print
+    println!("Edge length: {}", edge_length);
 
     let line = iter.next().unwrap();
 
@@ -121,6 +127,8 @@ fn main() {
                     let mut next_location = (location.0 + direction.0, location.1 + direction.1);
 
                     if board.get(&next_location).is_none() {
+                        get_next_location_and_rotation_if_you_exit_the_cube(location, direction);
+
                         // get opposite direction
                         let opposite_direction = (-direction.0, -direction.1);
 
@@ -168,4 +176,91 @@ fn main() {
     println!("Result: {}", result);
 
     println!("Time elapsed is: {:?}", start.elapsed());
+}
+
+fn get_next_location_and_rotation_if_you_exit_the_cube(
+    location: (i32, i32),
+    direction: (i32, i32),
+) -> ((i32, i32), (i32, i32)) {
+    // first, which segment are we in?
+
+    // . A B
+    // . C
+    // D E
+    // F
+
+    let area: char;
+
+    if location.0 < 50 {
+        if 50 <= location.1 && location.1 < 100 {
+            area = 'A';
+        } else if 100 <= location.1 && location.1 < 150 {
+            area = 'B';
+        } else {
+            panic!("Location not in cube: {:?}", location);
+        }
+    } else if 50 <= location.0 && location.0 < 100 {
+        if 50 <= location.1 && location.1 < 100 {
+            area = 'C';
+        } else {
+            panic!("Location not in cube: {:?}", location);
+        }
+    } else if 100 <= location.0 && location.0 < 150 {
+        if 0 <= location.1 && location.1 < 50 {
+            area = 'D';
+        } else if 50 <= location.1 && location.1 < 100 {
+            area = 'E';
+        } else {
+            panic!("Location not in cube: {:?}", location);
+        }
+    } else if 150 <= location.0 && location.0 < 200 {
+        if 0 <= location.1 && location.1 < 50 {
+            area = 'F';
+        } else {
+            panic!("Location not in cube: {:?}", location);
+        }
+    } else {
+        panic!("Location not in cube: {:?}", location);
+    }
+
+    println!("Area: {}", area);
+
+    // . A B
+    // . C
+    // D E
+    // F
+
+    // Match all combinations of area and direction
+    match (area, direction) {
+        // ('A', (0, 1)) => return ((50, 50), (1, 0)),
+        // ('A', (1, 0)) => return ((50, 50), (0, -1)),
+        ('A', (0, -1)) => return ((50, 50), (-1, 0)),
+        ('A', (-1, 0)) => return ((50, 50), (0, 1)),
+        ('B', (0, 1)) => return ((50, 100), (1, 0)),
+        ('B', (1, 0)) => return ((50, 100), (0, 1)),
+        // ('B', (0, -1)) => return ((50, 100), (-1, 0)),
+        ('B', (-1, 0)) => return ((50, 100), (0, -1)),
+        ('C', (0, 1)) => return ((100, 50), (1, 0)),
+        // ('C', (1, 0)) => return ((100, 50), (0, -1)),
+        ('C', (0, -1)) => return ((100, 50), (-1, 0)),
+        // ('C', (-1, 0)) => return ((100, 50), (0, 1)),
+        // ('D', (0, 1)) => return ((100, 0), (0, -1)),
+        // ('D', (1, 0)) => return ((100, 0), (1, 0)),
+        ('D', (0, -1)) => return ((100, 0), (0, 1)),
+        ('D', (-1, 0)) => return ((100, 0), (-1, 0)),
+        ('E', (0, 1)) => return ((100, 50), (0, -1)),
+        ('E', (1, 0)) => return ((100, 50), (1, 0)),
+        // ('E', (0, -1)) => return ((100, 50), (0, 1)),
+        // ('E', (-1, 0)) => return ((100, 50), (-1, 0)),
+        ('F', (0, 1)) => return ((100, 50), (0, -1)),
+        ('F', (1, 0)) => return ((100, 50), (1, 0)),
+        ('F', (0, -1)) => return ((100, 50), (0, 1)),
+        // ('F', (-1, 0)) => return ((100, 50), (-1, 0)),
+        _ => panic!(
+            "Invalid area and direction combination: {} {:?}",
+            area, direction
+        ),
+    }
+
+    return ((0, 0), (0, 0));
 }
