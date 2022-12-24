@@ -91,6 +91,8 @@ fn main() {
 
     let mut num_steps_to_find = 0;
 
+    let mut goal = (num_rows, num_cols - 1);
+
     'steps: for step in 1..=1000 {
         blizzards = simulate_blizzard_step(&blizzards, num_rows, num_cols);
 
@@ -110,9 +112,9 @@ fn main() {
                 let new_r = loc.0 + dr;
                 let new_c = loc.1 + dc;
 
-                if new_r == num_rows - 1 && new_c == num_cols - 1 {
+                if new_r == goal.0 && new_c == goal.1 {
                     // one step cause it's the next step, one extra step to get out
-                    num_steps_to_find = step + 1;
+                    num_steps_to_find = step;
                     break 'steps;
                 }
 
@@ -122,6 +124,8 @@ fn main() {
                     && new_c < num_cols
                     && !blizzards.contains_key(&(new_r, new_c))
                 {
+                    new_next_step_list.insert((new_r, new_c));
+                } else if (new_r, new_c) == (-1, 0) || (new_r, new_c) == (num_rows, num_cols - 1) {
                     new_next_step_list.insert((new_r, new_c));
                 }
             }
