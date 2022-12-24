@@ -91,7 +91,9 @@ fn main() {
 
     let mut num_steps_to_find = 0;
 
-    let mut goal = (num_rows, num_cols - 1);
+    // 0 is going to destination, 1 is coming back to start, 2 is going to destination
+    let mut phase = 0;
+    let mut goals = [(num_rows, num_cols - 1), (-1, 0), (num_rows, num_cols - 1)];
 
     'steps: for step in 1..=1000 {
         blizzards = simulate_blizzard_step(&blizzards, num_rows, num_cols);
@@ -101,7 +103,7 @@ fn main() {
 
         let mut new_next_step_list: HashSet<(i32, i32)> = HashSet::new();
 
-        for loc in &next_step_list {
+        'locations: for loc in &next_step_list {
             for direction in [
                 Direction::North,
                 Direction::South,
@@ -112,10 +114,18 @@ fn main() {
                 let new_r = loc.0 + dr;
                 let new_c = loc.1 + dc;
 
-                if new_r == goal.0 && new_c == goal.1 {
-                    // one step cause it's the next step, one extra step to get out
-                    num_steps_to_find = step;
-                    break 'steps;
+                if new_r == goals[phase].0 && new_c == goals[phase].1 {
+                    println!("Found phase {} goal at step: {}", phase, step);
+
+                    if phase == 2 {
+                        num_steps_to_find = step;
+                        break 'steps;
+                    } else {
+                        phase += 1;
+                        new_next_step_list = HashSet::new();
+                        new_next_step_list.insert((new_r, new_c));
+                        break 'locations;
+                    }
                 }
 
                 if 0 <= new_r
