@@ -27,14 +27,14 @@ async function run() {
 
   fs.writeFileSync(filename, input);
 
-  // Load template.ts
-  const template = fs.readFileSync("./template.ts", { encoding: "utf-8" });
+  // // Load template.ts
+  // const template = fs.readFileSync("./template.ts", { encoding: "utf-8" });
 
-  // Replace {{INPUTFILE}} with filename
-  const code = template.replace("{{INPUTFILE}}", filename);
+  // // Replace {{INPUTFILE}} with filename
+  // const code = template.replace("{{INPUTFILE}}", filename);
 
-  // Write code to file
-  fs.writeFileSync(`./${year}-${day}.ts`, code);
+  // // Write code to file
+  // fs.writeFileSync(`./${year}-${day}.ts`, code);
 }
 
 run();
